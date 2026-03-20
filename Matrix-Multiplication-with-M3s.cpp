@@ -44,10 +44,12 @@ void tiled_matrix_multiplication(const float* A, const float* B, float* C, queue
         });
 }
 
-void matrix_multiplication(const float* A, const float* B, float* C, queue& q) {
-    buffer<float, 2> bufA(A, range<2>(N, N));
-    buffer<float, 2> bufB(B, range<2>(N, N));
-    buffer<float, 2> bufC(C, range<2>(N, N));
+void matrix_multiplication(const float* A[N][N], const float* B[N][N], float* C[N][N], queue& q) {
+
+    buffer<float, 2> bufA((float*)A, range<2>(N, N));
+    buffer<float, 2> bufB((float*)B, range<2>(N, N));
+    buffer<float, 2> bufC((float*)C, range<2>(N, N));
+
     q.submit([&](handler& h) {
         auto accA = bufA.get_access<access::mode::read>(h);
         auto accB = bufB.get_access<access::mode::read>(h);
@@ -64,6 +66,7 @@ void matrix_multiplication(const float* A, const float* B, float* C, queue& q) {
             });
         });
 }
+
 void i_usm_matrix_multiplication(const float* A, const float* B, float* C, queue& q) {
     // The kernel now directly uses the pointers A, B, and C
     q.submit([&](handler& h) {
@@ -116,15 +119,28 @@ void e_usm_matrix_multiplication(const float* A_host, const float* B_host, float
 int main() {
 
 
-    float A[N * N];
-    float B[N * N];
-    float C[N * N];
+    //float A[N * N];
+    //float B[N * N];
+    //float C[N * N];
+    //for (int i = 0; i < N; i++) {
+    //    for (int j = 0; j < N; j++) {
+    //        A[i * N + j] = i;
+    //        B[i * N + j] = j;
+    //    }
+    //}
+
+    float A[N][N];
+    float B[N][N];
+    float C[N][N];
+
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            A[i * N + j] = i;
-            B[i * N + j] = j;
+        for (int j = 0; j < N; j++) {;
+            A[i][j] = float(i);
+            B[i][j] = float(j);
         }
     }
+
+
     queue q;
 
 
@@ -138,12 +154,12 @@ int main() {
     //float* A = malloc_shared<float>(N * N, q);
     //float* B = malloc_shared<float>(N * N, q);
     //float* C = malloc_shared<float>(N * N, q);
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            A[i * N + j] = i;
-            B[i * N + j] = j;
-        }
-    }
+    //for (int i = 0; i < N; i++) {
+    //    for (int j = 0; j < N; j++) {
+    //        A[i * N + j] = i;
+    //        B[i * N + j] = j;
+    //    }
+    //}
     auto start = std::chrono::high_resolution_clock::now();
     //e_usm_matrix_multiplication(A, B, C, q);
     //tiled_matrix_multiplication(A, B, C, q);
