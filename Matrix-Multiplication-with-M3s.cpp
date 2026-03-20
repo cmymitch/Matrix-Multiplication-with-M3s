@@ -146,7 +146,8 @@ int main() {
     }
     auto start = std::chrono::high_resolution_clock::now();
     //e_usm_matrix_multiplication(A, B, C, q);
-    tiled_matrix_multiplication(A, B, C, q);
+    //tiled_matrix_multiplication(A, B, C, q);
+	matrix_multiplication(A, B, C, q);
     q.wait();
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
